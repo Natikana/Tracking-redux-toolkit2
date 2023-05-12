@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import {AppRootStateType} from '../../app/store'
+
 import {
     addTodolistTC,
     changeTodolistFilterAC,
@@ -8,23 +8,25 @@ import {
     fetchTodolistsTC,
     FilterValuesType,
     removeTodolistTC,
-    TodolistDomainType
 } from './todolists-reducer'
-import {addTaskTC, removeTaskTC, TasksStateType, updateTaskTC} from './tasks-reducer'
-import {TaskStatuses} from '../../api/todolists-api'
+import {addTaskTC, removeTaskTC, updateTaskTC} from './tasks-reducer'
+import {TaskStatuses} from 'api/todolists-api'
 import {Grid, Paper} from '@material-ui/core'
-import {AddItemForm} from '../../components/AddItemForm/AddItemForm'
+import {AddItemForm} from 'components/AddItemForm/AddItemForm'
 import {Todolist} from './Todolist/Todolist'
-import { Redirect } from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
+import {selectTasks} from "features/TodolistsList/tasks.selectors";
+import {selectTodo} from "features/TodolistsList/todolists.selector";
+import {selectAuth} from "features/Login/auth.selectors";
 
 type PropsType = {
     demo?: boolean
 }
 
 export const TodolistsList: React.FC<PropsType> = ({demo = false}) => {
-    const todolists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
-    const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
-    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
+    const todolists = useSelector(selectTodo)
+    const tasks = useSelector(selectTasks)
+    const isLoggedIn = useSelector(selectAuth)
 
     const dispatch = useDispatch()
 
@@ -57,7 +59,7 @@ export const TodolistsList: React.FC<PropsType> = ({demo = false}) => {
     }, [])
 
     const changeFilter = useCallback(function (value: FilterValuesType, todolistId: string) {
-        const action = changeTodolistFilterAC({id:todolistId,filter:value})
+        const action = changeTodolistFilterAC({id: todolistId, filter: value})
         dispatch(action)
     }, [])
 
@@ -77,7 +79,7 @@ export const TodolistsList: React.FC<PropsType> = ({demo = false}) => {
     }, [dispatch])
 
     if (!isLoggedIn) {
-        return <Redirect to={"/login"} />
+        return <Redirect to={"/login"}/>
     }
 
     return <>

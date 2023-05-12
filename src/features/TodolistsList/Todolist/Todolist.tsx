@@ -1,10 +1,10 @@
 import React, {useCallback, useEffect} from 'react'
-import {AddItemForm} from '../../../components/AddItemForm/AddItemForm'
-import {EditableSpan} from '../../../components/EditableSpan/EditableSpan'
+import {AddItemForm} from 'components/AddItemForm/AddItemForm'
+import {EditableSpan} from 'components/EditableSpan/EditableSpan'
 import {Button, IconButton} from '@material-ui/core'
 import {Delete} from '@material-ui/icons'
 import {Task} from './Task/Task'
-import {TaskStatuses, TaskType} from '../../../api/todolists-api'
+import {TaskStatuses, TaskType} from 'api/todolists-api'
 import {FilterValuesType, TodolistDomainType} from '../todolists-reducer'
 import {useDispatch} from 'react-redux'
 import {fetchTasksTC} from '../tasks-reducer'
@@ -45,9 +45,9 @@ export const Todolist = React.memo(function ({demo = false, ...props}: PropsType
         props.changeTodolistTitle(props.todolist.id, title)
     }, [props.todolist.id, props.changeTodolistTitle])
 
-    const onAllClickHandler = useCallback(() => props.changeFilter('all', props.todolist.id), [props.todolist.id, props.changeFilter])
-    const onActiveClickHandler = useCallback(() => props.changeFilter('active', props.todolist.id), [props.todolist.id, props.changeFilter])
-    const onCompletedClickHandler = useCallback(() => props.changeFilter('completed', props.todolist.id), [props.todolist.id, props.changeFilter])
+    const onAllClickHandler = useCallback(() => props.changeFilter(FilterValuesType.all, props.todolist.id), [props.todolist.id, props.changeFilter])
+    const onActiveClickHandler = useCallback(() => props.changeFilter(FilterValuesType.active, props.todolist.id), [props.todolist.id, props.changeFilter])
+    const onCompletedClickHandler = useCallback(() => props.changeFilter(FilterValuesType.completed, props.todolist.id), [props.todolist.id, props.changeFilter])
 
 
     let tasksForTodolist = props.tasks

@@ -3,13 +3,13 @@ import {Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, TextField
 import {useFormik} from 'formik'
 import {useDispatch, useSelector} from 'react-redux'
 import {loginTC} from './auth-reducer'
-import {AppRootStateType} from '../../app/store'
-import { Redirect } from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
+import {selectAuth} from "features/Login/auth.selectors";
 
 export const Login = () => {
     const dispatch = useDispatch()
 
-    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn);
+    const isLoggedIn = useSelector(selectAuth);
 
     const formik = useFormik({
         validate: (values) => {
@@ -36,7 +36,7 @@ export const Login = () => {
     })
 
     if (isLoggedIn) {
-        return <Redirect to={"/"} />
+        return <Redirect to={"/"}/>
     }
 
 
