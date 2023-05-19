@@ -1,13 +1,13 @@
 import {
-    addTodolistAC, changeTodolistEntityStatusAC,
+    changeTodolistEntityStatusAC,
     changeTodolistFilterAC,
-    changeTodolistTitleAC, FilterValuesType,
-    removeTodolistAC, setTodolistsAC, TodolistDomainType,
-    todolistsReducer
+    FilterValuesType,
+    TodolistDomainType,
+    todolistsReducer, todoThunk
 } from './todolists-reducer'
 import {v1} from 'uuid'
-import {TodolistType} from '../../api/todolists-api'
-import {RequestStatusType} from '../../app/app-reducer'
+import {RequestStatus, TodolistType} from '../../api/todolists-api'
+
 
 let todolistId1: string
 let todolistId2: string
@@ -17,13 +17,30 @@ beforeEach(() => {
     todolistId1 = v1()
     todolistId2 = v1()
     startState = [
-        {id: todolistId1, title: 'What to learn', filter: 'all', entityStatus: 'idle', addedDate: '', order: 0},
-        {id: todolistId2, title: 'What to buy', filter: 'all', entityStatus: 'idle', addedDate: '', order: 0}
+        {
+            id: todolistId1,
+            title: 'What to learn',
+            filter: FilterValuesType.all,
+            entityStatus: RequestStatus.idle,
+            addedDate: '',
+            order: 0
+        },
+        {
+            id: todolistId2,
+            title: 'What to buy',
+            filter: FilterValuesType.all,
+            entityStatus: RequestStatus.idle,
+            addedDate: '',
+            order: 0
+        }
     ]
 })
 
 test('correct todolist should be removed', () => {
-    const endState = todolistsReducer(startState, removeTodolistAC(todolistId1))
+    const endState = todolistsReducer(startState, todoThunk.removeTodolist.fulfilled(
+        {todolistId: todolistId1},
+        '',
+        {todolistId: todolistId1}))
 
     expect(endState.length).toBe(1)
     expect(endState[0].id).toBe(todolistId2)
@@ -38,7 +55,7 @@ test('correct todolist should be added', () => {
     }
 
 
-    const endState = todolistsReducer(startState, addTodolistAC(todolist))
+    const endState = todolistsReducer(startState, todoThunk.addTodolist.fulfilled({todolist}, '', {title: todolist.title}))
 
     expect(endState.length).toBe(3)
     expect(endState[0].title).toBe(todolist.title)
@@ -48,7 +65,11 @@ test('correct todolist should be added', () => {
 test('correct todolist should change its name', () => {
     let newTodolistTitle = 'New Todolist'
 
-    const action = changeTodolistTitleAC(todolistId2, newTodolistTitle)
+    const action = todoThunk.changeTodolistTitle.fulfilled(
+        {todolistId: todolistId2, title: newTodolistTitle},
+        '',
+        {title: newTodolistTitle, todolistId: todolistId2}
+    )
 
     const endState = todolistsReducer(startState, action)
 
@@ -57,32 +78,34 @@ test('correct todolist should change its name', () => {
 })
 
 test('correct filter of todolist should be changed', () => {
-    let newFilter: FilterValuesType = 'completed'
 
-    const action = changeTodolistFilterAC(todolistId2, newFilter)
+
+    const action = changeTodolistFilterAC({id: todolistId2, filter: FilterValuesType.completed})
 
     const endState = todolistsReducer(startState, action)
 
     expect(endState[0].filter).toBe('all')
-    expect(endState[1].filter).toBe(newFilter)
+    expect(endState[1].filter).toBe('completed')
 })
 test('todolists should be added', () => {
 
-    const action = setTodolistsAC(startState)
+    const action = todoThunk.fetchTodolists.fulfilled(
+        {todolists: startState},
+        ''
+    )
 
     const endState = todolistsReducer([], action)
 
     expect(endState.length).toBe(2)
 })
 test('correct entity status of todolist should be changed', () => {
-    let newStatus: RequestStatusType = 'loading'
 
-    const action = changeTodolistEntityStatusAC(todolistId2, newStatus)
+    const action = changeTodolistEntityStatusAC({id: todolistId2, entityStatus: RequestStatus.succeeded})
 
     const endState = todolistsReducer(startState, action)
 
     expect(endState[0].entityStatus).toBe('idle')
-    expect(endState[1].entityStatus).toBe(newStatus)
+    expect(endState[1].entityStatus).toBe('succeeded')
 })
 
 

@@ -1,10 +1,10 @@
 import {
-    RequestStatusType,
     setAppErrorAC,
     setAppStatusAC,
 } from 'app/app-reducer'
-import {ResponseType} from 'api/todolists-api'
+import {RequestStatus, ResponseType} from 'api/todolists-api'
 import {Dispatch} from 'redux'
+import axios, {AxiosError} from "axios";
 
 
 export const handleServerAppError = <D>(data: ResponseType<D>, dispatch: Dispatch) => {
@@ -13,10 +13,17 @@ export const handleServerAppError = <D>(data: ResponseType<D>, dispatch: Dispatc
     } else {
         dispatch(setAppErrorAC({error: 'Some error occurred'}))
     }
-    dispatch(setAppStatusAC({status: RequestStatusType.failed}))
+    dispatch(setAppStatusAC({status: RequestStatus.failed}))
 }
 
-export const handleServerNetworkError = (error: { message: string }, dispatch: Dispatch) => {
-    dispatch(setAppErrorAC({error: error.message ? error.message : 'Some error occurred'}))
-    dispatch(setAppStatusAC({status: RequestStatusType.failed}))
+export const handleServerNetworkError = (e: unknown, dispatch: Dispatch) => {
+    const err = e as Error | AxiosError<{error:string}>
+    if(axios.isAxiosError(err)) {
+        const error = err.message ? err.message : 'Some error occurred'
+        dispatch(setAppErrorAC({error}))
+
+    } else {
+        dispatch(setAppErrorAC({error:`Native error ${err.message}`}))
+    }
+    dispatch(setAppStatusAC({status:RequestStatus.failed}))
 }

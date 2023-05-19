@@ -14,12 +14,12 @@ import {Menu} from '@material-ui/icons'
 import {TodolistsList} from 'features/TodolistsList/TodolistsList'
 import {ErrorSnackbar} from 'components/ErrorSnackbar/ErrorSnackbar'
 import {useDispatch, useSelector} from 'react-redux'
-import {initializeAppTC} from './app-reducer'
 import {BrowserRouter, Route} from 'react-router-dom'
 import {Login} from 'features/Login/Login'
 import {logoutTC} from 'features/Login/auth-reducer'
 import {selectAuth} from "features/Login/auth.selectors";
 import {selectInitialized, selectStatus} from "app/app.selectors";
+import {appThunk} from "./app-reducer";
 
 type PropsType = {
     demo?: boolean
@@ -32,7 +32,7 @@ function App({demo = false}: PropsType) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(initializeAppTC())
+        dispatch(appThunk.initializeApp())
     }, [])
 
     const logoutHandler = useCallback(() => {

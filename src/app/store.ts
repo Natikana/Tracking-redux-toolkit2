@@ -3,7 +3,8 @@ import {todolistsReducer} from 'features/TodolistsList/todolists-reducer';
 import {AnyAction, combineReducers} from 'redux'
 import appReducer from './app-reducer'
 import authReducer from '../features/Login/auth-reducer'
-import {configureStore, ThunkAction} from "@reduxjs/toolkit";
+import {configureStore} from "@reduxjs/toolkit";
+import {ThunkAction} from 'redux-thunk'
 
 
 const rootReducer = combineReducers({
@@ -18,6 +19,7 @@ export const store = configureStore({
 })
 
 export type AppRootStateType = ReturnType<typeof rootReducer>
+export type AppDispatch = typeof store.dispatch
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType,
     AppRootStateType,
     unknown,
