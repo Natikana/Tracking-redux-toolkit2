@@ -2,12 +2,13 @@ import {
     setAppErrorAC,
     setAppStatusAC,
 } from 'app/app-reducer'
-import {RequestStatus, ResponseType} from 'api/todolists-api'
+import {RequestStatus, ResponseDataType} from 'api/todolists-api'
 import {Dispatch} from 'redux'
 import axios, {AxiosError} from "axios";
 
 
-export const handleServerAppError = <D>(data: ResponseType<D>, dispatch: Dispatch) => {
+export const handleServerAppError = <D>(data: ResponseDataType<D>, dispatch: Dispatch) => {
+    debugger
     if (data.messages.length) {
         dispatch(setAppErrorAC({error: data.messages[0]}))
     } else {

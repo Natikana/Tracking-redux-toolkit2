@@ -16,10 +16,11 @@ import {ErrorSnackbar} from 'components/ErrorSnackbar/ErrorSnackbar'
 import {useDispatch, useSelector} from 'react-redux'
 import {BrowserRouter, Route} from 'react-router-dom'
 import {Login} from 'features/Login/Login'
-import {logoutTC} from 'features/Login/auth-reducer'
+import {authThunk} from 'features/Login/auth-reducer'
 import {selectAuth} from "features/Login/auth.selectors";
 import {selectInitialized, selectStatus} from "app/app.selectors";
-import {appThunk} from "./app-reducer";
+import {AppDispatch} from "./store";
+
 
 type PropsType = {
     demo?: boolean
@@ -29,14 +30,14 @@ function App({demo = false}: PropsType) {
     const status = useSelector(selectStatus)
     const isInitialized = useSelector(selectInitialized)
     const isLoggedIn = useSelector(selectAuth)
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
 
     useEffect(() => {
-        dispatch(appThunk.initializeApp())
+        dispatch(authThunk.initializeApp())
     }, [])
 
     const logoutHandler = useCallback(() => {
-        dispatch(logoutTC())
+        dispatch(authThunk.logout())
     }, [])
 
     if (!isInitialized) {

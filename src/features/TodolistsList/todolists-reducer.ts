@@ -3,7 +3,7 @@ import {setAppStatusAC} from 'app/app-reducer'
 import {handleServerNetworkError} from 'utils/error-utils'
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {commonActions} from "common/commonActions/commonActions";
-import {createAppAsyncThunk} from "../../common/createAppAsyncThunk/createAppAsyncThunk";
+import {createAppAsyncThunk} from "common/createAppAsyncThunk/createAppAsyncThunk";
 
 
 const addTodolist = createAppAsyncThunk<{ todolist: TodolistType }, { title: string }>
@@ -37,6 +37,7 @@ const removeTodolist = createAppAsyncThunk<{ todolistId: string }, { todolistId:
 
 const fetchTodolists = createAppAsyncThunk<{ todolists: TodolistType[] }>
 ('todolists/fetchTodolists', async (arg, thunkAPI) => {
+
     const {dispatch, rejectWithValue} = thunkAPI
     try {
         dispatch(setAppStatusAC({status: RequestStatus.loading}))

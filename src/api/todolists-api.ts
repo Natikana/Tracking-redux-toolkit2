@@ -13,8 +13,8 @@ export const todolistsAPI = {
     getTodolists() {
         return instance.get<TodolistType[]>('todo-lists');
     },
-    createTodolist(title: string): Promise<AxiosResponse<ResponseType<{ item: TodolistType }>>> {
-        return instance.post<ResponseType<{ item: TodolistType }>>('todo-lists', {title: title});
+    createTodolist(title: string): Promise<AxiosResponse<ResponseDataType<{ item: TodolistType }>>> {
+        return instance.post<ResponseDataType<{ item: TodolistType }>>('todo-lists', {title: title});
     },
     deleteTodolist(id: string) {
         return instance.delete<ResponseType>(`todo-lists/${id}`);
@@ -29,10 +29,10 @@ export const todolistsAPI = {
         return instance.delete<ResponseType>(`todo-lists/${todolistId}/tasks/${taskId}`);
     },
     createTask(todolistId: string, taskTitile: string) {
-        return instance.post<ResponseType<{ item: TaskType }>>(`todo-lists/${todolistId}/tasks`, {title: taskTitile});
+        return instance.post<ResponseDataType<{ item: TaskType }>>(`todo-lists/${todolistId}/tasks`, {title: taskTitile});
     },
     updateTask(todolistId: string, taskId: string, model: UpdateTaskModelType) {
-        return instance.put<ResponseType<TaskType>>(`todo-lists/${todolistId}/tasks/${taskId}`, model);
+        return instance.put<ResponseDataType<TaskType>>(`todo-lists/${todolistId}/tasks/${taskId}`, model);
     }
 }
 
@@ -46,13 +46,13 @@ export type LoginParamsType = {
 
 export const authAPI = {
     login(data: LoginParamsType) {
-        return instance.post<ResponseType<{ userId?: number }>>('auth/login', data);
+        return instance.post<ResponseDataType<{ userId?: number }>>('auth/login', data);
     },
     logout() {
-        return instance.delete<ResponseType<{ userId?: number }>>('auth/login');
+        return instance.delete<ResponseDataType<{ userId?: number }>>('auth/login');
     },
     me() {
-        return instance.get<ResponseType<{ id: number; email: string; login: string }>>('auth/me');
+        return instance.get<ResponseDataType<{ id: number; email: string; login: string }>>('auth/me');
     }
 }
 
@@ -81,10 +81,15 @@ export type TodolistType = {
     addedDate: string
     order: number
 }
-export type ResponseType<D = {}> = {
+export type FieldsErrorsType = {
+    field:string
+    error:string
+}
+export type ResponseDataType<D = {}> = {
     resultCode: number
     messages: Array<string>
     data: D
+    fieldsErrors:FieldsErrorsType[]
 }
 
 export enum TaskStatuses {

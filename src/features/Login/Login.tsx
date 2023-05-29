@@ -1,28 +1,33 @@
 import React from 'react'
 import {Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, TextField, Button, Grid} from '@material-ui/core'
-import {useFormik} from 'formik'
+import {FormikHelpers, useFormik} from 'formik'
 import {useDispatch, useSelector} from 'react-redux'
-import {loginTC} from './auth-reducer'
-import {Redirect} from 'react-router-dom'
 import {selectAuth} from "features/Login/auth.selectors";
+import {authThunk} from "./auth-reducer";
+import {AppDispatch} from "../../app/store";
+import {setAppErrorAC, setAppStatusAC} from "../../app/app-reducer";
+import {FieldsErrorsType, LoginParamsType, RequestStatus} from "../../api/todolists-api";
+import {Redirect} from "react-router-dom";
+import {handleServerAppError} from "../../utils/error-utils";
 
 export const Login = () => {
-    const dispatch = useDispatch()
+
+    const dispatch = useDispatch<AppDispatch>()
 
     const isLoggedIn = useSelector(selectAuth);
 
     const formik = useFormik({
         validate: (values) => {
-            if (!values.email) {
-                return {
-                    email: 'Email is required'
-                }
-            }
-            if (!values.password) {
-                return {
-                    password: 'Password is required'
-                }
-            }
+            /* if (!values.email) {
+                 return {
+                     email: 'Email is required'
+                 }
+             }
+             if (!values.password) {
+                 return {
+                     password: 'Password is required'
+                 }
+             }*/
 
         },
         initialValues: {
@@ -30,8 +35,30 @@ export const Login = () => {
             password: '',
             rememberMe: false
         },
-        onSubmit: values => {
-            dispatch(loginTC(values));
+        onSubmit: (values, formikHelpers: FormikHelpers<LoginParamsType>) => {
+            dispatch(authThunk.login(values))
+                .unwrap()
+                .then(res => {
+                    console.log(res)
+                })
+                .catch(e => {
+                    console.log(e)
+                    const fieldError:FieldsErrorsType[] = e.fieldsErrors
+                    if(e.fieldsErrors.length) {
+                        fieldError.forEach(el => {
+                            formikHelpers.setFieldError(el.field,el.error)
+                        })
+
+                    }
+                    if(!e.fieldsErrors)
+                    dispatch(setAppErrorAC({error:e.messages[0]}))
+
+                })
+                .finally(() => {
+                    dispatch(setAppStatusAC({status: RequestStatus.failed}))
+                    }
+
+                )
         },
     })
 
@@ -64,14 +91,14 @@ export const Login = () => {
                             margin="normal"
                             {...formik.getFieldProps("email")}
                         />
-                        {formik.errors.email ? <div>{formik.errors.email}</div> : null}
+                        {formik.errors.email ? <div style={{color: 'red'}}>{formik.errors.email}</div> : null}
                         <TextField
                             type="password"
                             label="Password"
                             margin="normal"
                             {...formik.getFieldProps("password")}
                         />
-                        {formik.errors.password ? <div>{formik.errors.password}</div> : null}
+                        {formik.errors.password ? <div style={{color: 'red'}}>{formik.errors.password}</div> : null}
                         <FormControlLabel
                             label={'Remember me'}
                             control={<Checkbox
