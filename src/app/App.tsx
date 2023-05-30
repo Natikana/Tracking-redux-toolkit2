@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import './App.css'
 import {
     AppBar,
@@ -13,13 +13,13 @@ import {
 import {Menu} from '@material-ui/icons'
 import {TodolistsList} from 'features/TodolistsList/TodolistsList'
 import {ErrorSnackbar} from 'components/ErrorSnackbar/ErrorSnackbar'
-import {useDispatch, useSelector} from 'react-redux'
+import {useSelector} from 'react-redux'
 import {BrowserRouter, Route} from 'react-router-dom'
 import {Login} from 'features/Login/Login'
 import {authThunk} from 'features/Login/auth-reducer'
 import {selectAuth} from "features/Login/auth.selectors";
 import {selectInitialized, selectStatus} from "app/app.selectors";
-import {AppDispatch} from "./store";
+import {useActions} from "../hooks/useAction";
 
 
 type PropsType = {
@@ -30,15 +30,14 @@ function App({demo = false}: PropsType) {
     const status = useSelector(selectStatus)
     const isInitialized = useSelector(selectInitialized)
     const isLoggedIn = useSelector(selectAuth)
-    const dispatch = useDispatch<AppDispatch>()
+    const {initializeApp, logout} = useActions(authThunk)
 
     useEffect(() => {
-        dispatch(authThunk.initializeApp())
+        initializeApp()
     }, [])
 
-    const logoutHandler = useCallback(() => {
-        dispatch(authThunk.logout())
-    }, [])
+    const logoutHandler = () => logout()
+
 
     if (!isInitialized) {
         return <div

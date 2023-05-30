@@ -4,62 +4,75 @@ import {FormikHelpers, useFormik} from 'formik'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectAuth} from "features/Login/auth.selectors";
 import {authThunk} from "./auth-reducer";
-import {AppDispatch} from "../../app/store";
-import {setAppErrorAC, setAppStatusAC} from "../../app/app-reducer";
-import {FieldsErrorsType, LoginParamsType, RequestStatus} from "../../api/todolists-api";
+import {AppDispatch} from "app/store";
+import {slice} from "app/app-reducer";
+import {FieldsErrorsType, LoginParamsType, RequestStatus} from "api/todolists-api";
 import {Redirect} from "react-router-dom";
-import {handleServerAppError} from "../../utils/error-utils";
+import {handleServerNetworkError} from "utils/error-utils";
+import {AxiosError} from "axios";
+import {useActions} from "hooks/useAction";
+
+
+const isConnectionError = (e: AxiosError<{ error: string }> | Error) => {
+    return !e.hasOwnProperty('resultCode')
+}
 
 export const Login = () => {
 
     const dispatch = useDispatch<AppDispatch>()
-
-    const isLoggedIn = useSelector(selectAuth);
+    const isLoggedIn = useSelector(selectAuth)
+    const {login} = useActions(authThunk)
+    const {setAppErrorAC, setAppStatusAC} = useActions(slice.actions)
 
     const formik = useFormik({
         validate: (values) => {
-            /* if (!values.email) {
-                 return {
-                     email: 'Email is required'
-                 }
-             }
-             if (!values.password) {
-                 return {
-                     password: 'Password is required'
-                 }
-             }*/
+            const errors = {} as LoginParamsType;
+            if (!values.password) {
+                errors.password = 'Required';
+            } else if (values.password.length < 6) {
+                errors.password = 'Must be 6 characters or more';
+            }
 
+            if (!values.email) {
+                errors.email = 'Required';
+            } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+                errors.email = 'Invalid email address';
+            }
+            return errors;
         },
         initialValues: {
             email: '',
             password: '',
             rememberMe: false
         },
+
         onSubmit: (values, formikHelpers: FormikHelpers<LoginParamsType>) => {
-            dispatch(authThunk.login(values))
+           login(values)
                 .unwrap()
                 .then(res => {
                     console.log(res)
                 })
                 .catch(e => {
-                    console.log(e)
-                    const fieldError:FieldsErrorsType[] = e.fieldsErrors
+                    const {fieldsErrors} = e as {fieldsErrors: FieldsErrorsType[]}
+                    if(isConnectionError(e)) {
+                        handleServerNetworkError(e, dispatch)
+                        return;
+                    }
+
                     if(e.fieldsErrors.length) {
-                        fieldError.forEach(el => {
+                        fieldsErrors.forEach((el) => {
                             formikHelpers.setFieldError(el.field,el.error)
                         })
-
+                        return;
                     }
-                    if(!e.fieldsErrors)
-                    dispatch(setAppErrorAC({error:e.messages[0]}))
-
+                    setAppErrorAC({error:e.messages[0]})
                 })
                 .finally(() => {
-                    dispatch(setAppStatusAC({status: RequestStatus.failed}))
+                    setAppStatusAC({status: RequestStatus.failed})
                     }
-
                 )
         },
+
     })
 
     if (isLoggedIn) {
@@ -91,14 +104,14 @@ export const Login = () => {
                             margin="normal"
                             {...formik.getFieldProps("email")}
                         />
-                        {formik.errors.email ? <div style={{color: 'red'}}>{formik.errors.email}</div> : null}
+                        {formik.touched.email && formik.errors.email ? <div style={{color: 'red'}}>{formik.errors.email}</div> : null}
                         <TextField
                             type="password"
                             label="Password"
                             margin="normal"
                             {...formik.getFieldProps("password")}
                         />
-                        {formik.errors.password ? <div style={{color: 'red'}}>{formik.errors.password}</div> : null}
+                        {formik.touched.password && formik.errors.password ? <div style={{color: 'red'}}>{formik.errors.password}</div> : null}
                         <FormControlLabel
                             label={'Remember me'}
                             control={<Checkbox

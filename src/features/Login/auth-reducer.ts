@@ -15,7 +15,6 @@ const initializeApp = createAppAsyncThunk<{ isLoggedIn: boolean }, void>
         if (res.data.resultCode === ResultCode.succeeded) {
             return {isLoggedIn: true}
         } else {
-            //handleServerAppError(res.data, dispatch)
             return rejectWithValue(null)
         }
 
@@ -39,33 +38,15 @@ const login = createAppAsyncThunk<{ isLoggedIn: boolean }, LoginParamsType>
             dispatch(setAppStatusAC({status: RequestStatus.succeeded}))
             return {isLoggedIn: true}
         } else {
-            console.log(res.data)
-            //handleServerAppError(res.data, dispatch)
             return rejectWithValue(res.data)
         }
 
     } catch (e) {
-        handleServerNetworkError(e, dispatch)
-        return rejectWithValue(null)
+        return rejectWithValue(e)
     }
 })
 
-/*export const loginTC = (data: LoginParamsType):AppThunk => (dispatch) => {
-    dispatch(setAppStatusAC({status: RequestStatus.loading}))
-    authAPI.login(data)
-        .then(res => {
-            if (res.data.resultCode === 0) {
 
-                dispatch(setIsLoggedInAC({isLoggedIn: true}))
-                dispatch(setAppStatusAC({status: RequestStatus.succeeded}))
-            } else {
-                handleServerAppError(res.data, dispatch)
-            }
-        })
-        .catch((error) => {
-            handleServerNetworkError(error, dispatch)
-        })
-}*/
 const logout = createAppAsyncThunk<{ isLoggedIn: boolean }, void>
 ('auth/logout', async (arg, thunkAPI) => {
 
@@ -91,22 +72,7 @@ const logout = createAppAsyncThunk<{ isLoggedIn: boolean }, void>
 const authInitialState = {
     isLoggedIn: false
 }
-/*export const logoutTC = ():AppThunk => (dispatch) => {
-    dispatch(setAppStatusAC({status: RequestStatus.loading}))
-    authAPI.logout()
-        .then(res => {
-            if (res.data.resultCode === 0) {
-                dispatch(setIsLoggedInAC({isLoggedIn: false}))
-                dispatch(commonActions())
-                dispatch(setAppStatusAC({status: RequestStatus.succeeded}))
-            } else {
-                handleServerAppError(res.data, dispatch)
-            }
-        })
-        .catch((error) => {
-            handleServerNetworkError(error, dispatch)
-        })
-}*/
+
 export const slice = createSlice({
     name: 'auth',
     initialState: authInitialState,
@@ -121,7 +87,6 @@ export const slice = createSlice({
                 state.isLoggedIn = action.payload.isLoggedIn
             })
             .addCase(logout.fulfilled, (state, action) => {
-
                 state.isLoggedIn = action.payload.isLoggedIn
             })
     }
