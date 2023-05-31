@@ -1,24 +1,31 @@
-import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
+import React, {ChangeEvent, FC, KeyboardEvent, memo, useState} from 'react';
 import {IconButton, TextField} from '@material-ui/core';
 import {AddBox} from '@material-ui/icons';
 
-type AddItemFormPropsType = {
-    addItem: (title: string) => void
+type Props = {
+    addItem: (title: string) => Promise<any>
     disabled?: boolean
 }
 
-export const AddItemForm = React.memo(function({addItem, disabled = false}: AddItemFormPropsType) {
+export const AddItemForm:FC<Props> = memo(({disabled = false, addItem}) => {
     console.log("AddItemForm called")
 
     let [title, setTitle] = useState("")
     let [error, setError] = useState<string | null>(null)
 
+
     const addItemHandler = () => {
         if (title.trim() !== "") {
-            addItem(title);
-            setTitle("");
+            addItem(title)
+                .then(() => {
+                setTitle("")
+            })
+                .catch((e) => {
+                    setError(e.messages[0])
+                })
+
         } else {
-            setError("Title is required");
+            setError("Title is required")
         }
     }
 

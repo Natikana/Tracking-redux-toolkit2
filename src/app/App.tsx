@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {FC, useEffect} from 'react'
 import './App.css'
 import {
     AppBar,
@@ -11,7 +11,7 @@ import {
     Typography
 } from '@material-ui/core'
 import {Menu} from '@material-ui/icons'
-import {TodolistsList} from 'features/TodolistsList/TodolistsList'
+import {TodolistsList} from 'features/TodolistsList/Todolist/TodolistsList'
 import {ErrorSnackbar} from 'components/ErrorSnackbar/ErrorSnackbar'
 import {useSelector} from 'react-redux'
 import {BrowserRouter, Route} from 'react-router-dom'
@@ -22,11 +22,11 @@ import {selectInitialized, selectStatus} from "app/app.selectors";
 import {useActions} from "../hooks/useAction";
 
 
-type PropsType = {
+type Props = {
     demo?: boolean
 }
 
-function App({demo = false}: PropsType) {
+export const App:FC<Props> = ({demo = false}) => {
     const status = useSelector(selectStatus)
     const isInitialized = useSelector(selectInitialized)
     const isLoggedIn = useSelector(selectAuth)
@@ -71,4 +71,3 @@ function App({demo = false}: PropsType) {
     )
 }
 
-export default App

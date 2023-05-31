@@ -1,8 +1,11 @@
-import {RequestStatus, todolistsAPI, TodolistType} from 'api/todolists-api'
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {commonActions} from "common/commonActions/commonActions";
 import {createAppAsyncThunk} from "common/createAppAsyncThunk/createAppAsyncThunk";
 import {thunkTryCatch} from "common/thunk-try-catch/thunk-try-catch";
+import {TodolistDomainType, todolistsAPI, TodolistType} from "./todokists.api.ts/todokists.api";
+import {RequestStatus, ResultCode} from "enums/enums";
+import {FilterValuesType} from "types/types";
+import {handleServerAppError} from "../../../utils/error-utils";
 
 
 const addTodolist = createAppAsyncThunk<{ todolist: TodolistType }, { title: string }>
@@ -10,7 +13,12 @@ const addTodolist = createAppAsyncThunk<{ todolist: TodolistType }, { title: str
     const {dispatch, rejectWithValue} = thunkAPI
     return thunkTryCatch(thunkAPI, async () => {
         const res = await todolistsAPI.createTodolist(arg.title)
-        return {todolist: res.data.data.item}
+        if (res.data.resultCode === ResultCode.succeeded ) {
+            return {todolist: res.data.data.item}
+        }
+        else {
+            return rejectWithValue(res.data)
+        }
     })
 })
 
@@ -102,15 +110,5 @@ export const {
 export const todoThunk = {fetchTodolists, removeTodolist, addTodolist, changeTodolistTitle}
 
 
-// types
-export enum FilterValuesType {
-    all = 'all',
-    active = 'active',
-    completed = 'completed'
-}
 
-export type TodolistDomainType = TodolistType & {
-    filter: FilterValuesType
-    entityStatus: RequestStatus
-}
 

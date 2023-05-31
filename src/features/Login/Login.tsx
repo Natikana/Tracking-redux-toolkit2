@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {FC} from 'react'
 import {Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, TextField, Button, Grid} from '@material-ui/core'
 import {FormikHelpers, useFormik} from 'formik'
 import {useDispatch, useSelector} from 'react-redux'
@@ -6,18 +6,21 @@ import {selectAuth} from "features/Login/auth.selectors";
 import {authThunk} from "./auth-reducer";
 import {AppDispatch} from "app/store";
 import {slice} from "app/app-reducer";
-import {FieldsErrorsType, LoginParamsType, RequestStatus} from "api/todolists-api";
 import {Redirect} from "react-router-dom";
 import {handleServerNetworkError} from "utils/error-utils";
 import {AxiosError} from "axios";
 import {useActions} from "hooks/useAction";
+import {FieldsErrorsType} from "types/types";
+import {LoginParamsType} from "./auth.api.ts/auth.api";
+import {RequestStatus} from "enums/enums";
 
 
 const isConnectionError = (e: AxiosError<{ error: string }> | Error) => {
     return !e.hasOwnProperty('resultCode')
 }
+type ErrorFieldsType = Partial<Omit<LoginParamsType, 'captcha'| 'rememberMe'>>
 
-export const Login = () => {
+export const Login:FC = () => {
 
     const dispatch = useDispatch<AppDispatch>()
     const isLoggedIn = useSelector(selectAuth)
@@ -26,19 +29,19 @@ export const Login = () => {
 
     const formik = useFormik({
         validate: (values) => {
-            const errors = {} as LoginParamsType;
+            const errors:ErrorFieldsType = {}
             if (!values.password) {
-                errors.password = 'Required';
+                errors.password = 'Required'
             } else if (values.password.length < 6) {
-                errors.password = 'Must be 6 characters or more';
+                errors.password = 'Must be 6 characters or more'
             }
 
             if (!values.email) {
-                errors.email = 'Required';
+                errors.email = 'Required'
             } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-                errors.email = 'Invalid email address';
+                errors.email = 'Invalid email address'
             }
-            return errors;
+            return errors
         },
         initialValues: {
             email: '',
@@ -49,21 +52,17 @@ export const Login = () => {
         onSubmit: (values, formikHelpers: FormikHelpers<LoginParamsType>) => {
            login(values)
                 .unwrap()
-                .then(res => {
-                    console.log(res)
-                })
                 .catch(e => {
                     const {fieldsErrors} = e as {fieldsErrors: FieldsErrorsType[]}
                     if(isConnectionError(e)) {
                         handleServerNetworkError(e, dispatch)
-                        return;
+                        return
                     }
-
                     if(e.fieldsErrors.length) {
                         fieldsErrors.forEach((el) => {
                             formikHelpers.setFieldError(el.field,el.error)
                         })
-                        return;
+                        return
                     }
                     setAppErrorAC({error:e.messages[0]})
                 })
@@ -78,7 +77,6 @@ export const Login = () => {
     if (isLoggedIn) {
         return <Redirect to={"/"}/>
     }
-
 
     return <Grid container justify="center">
         <Grid item xs={4}>

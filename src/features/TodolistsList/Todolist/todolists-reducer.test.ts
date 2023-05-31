@@ -6,7 +6,7 @@ import {
     todolistsReducer, todoThunk
 } from './todolists-reducer'
 import {v1} from 'uuid'
-import {RequestStatus, TodolistType} from '../../api/todolists-api'
+import {RequestStatus, TodolistType} from '../../../api/todolists-api'
 
 
 let todolistId1: string

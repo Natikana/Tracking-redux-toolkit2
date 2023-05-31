@@ -1,9 +1,10 @@
-import {authAPI, LoginParamsType, RequestStatus, ResultCode} from 'api/todolists-api'
 import {handleServerAppError, handleServerNetworkError} from 'utils/error-utils'
 import {createSlice} from "@reduxjs/toolkit";
 import {commonActions} from "common/commonActions/commonActions";
 import {setAppStatusAC, setInitializedAC} from "app/app-reducer";
 import {createAppAsyncThunk} from "common/createAppAsyncThunk/createAppAsyncThunk";
+import {authAPI, LoginParamsType} from "./auth.api.ts/auth.api";
+import {RequestStatus, ResultCode} from "enums/enums";
 
 
 const initializeApp = createAppAsyncThunk<{ isLoggedIn: boolean }, void>

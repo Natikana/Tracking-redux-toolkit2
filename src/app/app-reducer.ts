@@ -1,5 +1,6 @@
-import { RequestStatus} from 'api/todolists-api'
+
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {RequestStatus} from "../enums/enums";
 
 
 const appInitialState = {

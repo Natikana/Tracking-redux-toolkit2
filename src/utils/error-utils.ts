@@ -1,9 +1,9 @@
 import {
     setAppErrorAC,
 } from 'app/app-reducer'
-import {ResponseDataType} from 'api/todolists-api'
 import {Dispatch} from 'redux'
 import axios, {AxiosError} from "axios";
+import {ResponseDataType} from "types/types";
 
 /**
  Handles server application errors by dispatching an action to update the application error state.

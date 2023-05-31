@@ -1,5 +1,6 @@
 import appReducer, {setAppErrorAC, setAppStatusAC} from './app-reducer'
-import {RequestStatus} from "../api/todolists-api";
+import {RequestStatus} from "../enums/enums";
+
 
 type InitialStateType = {
     error: null | string,
