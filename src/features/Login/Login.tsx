@@ -1,35 +1,27 @@
 import React, {FC} from 'react'
 import {Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, TextField, Button, Grid} from '@material-ui/core'
 import {FormikHelpers, useFormik} from 'formik'
-import {useDispatch, useSelector} from 'react-redux'
+import { useSelector} from 'react-redux'
 import {selectAuth} from "features/Login/auth.selectors";
 import {authThunk} from "./auth-reducer";
-import {AppDispatch} from "app/store";
 import {slice} from "app/app-reducer";
 import {Redirect} from "react-router-dom";
-import {handleServerNetworkError} from "utils/error-utils";
-import {AxiosError} from "axios";
 import {useActions} from "hooks/useAction";
 import {FieldsErrorsType} from "types/types";
 import {LoginParamsType} from "./auth.api.ts/auth.api";
-import {RequestStatus} from "enums/enums";
 
 
-const isConnectionError = (e: AxiosError<{ error: string }> | Error) => {
-    return !e.hasOwnProperty('resultCode')
-}
-type ErrorFieldsType = Partial<Omit<LoginParamsType, 'captcha'| 'rememberMe'>>
+type ErrorFieldsType = Partial<Omit<LoginParamsType, 'captcha' | 'rememberMe'>>
 
-export const Login:FC = () => {
+export const Login: FC = () => {
 
-    const dispatch = useDispatch<AppDispatch>()
     const isLoggedIn = useSelector(selectAuth)
     const {login} = useActions(authThunk)
-    const {setAppErrorAC, setAppStatusAC} = useActions(slice.actions)
+    const {setAppErrorAC} = useActions(slice.actions)
 
     const formik = useFormik({
         validate: (values) => {
-            const errors:ErrorFieldsType = {}
+            const errors: ErrorFieldsType = {}
             if (!values.password) {
                 errors.password = 'Required'
             } else if (values.password.length < 6) {
@@ -50,26 +42,21 @@ export const Login:FC = () => {
         },
 
         onSubmit: (values, formikHelpers: FormikHelpers<LoginParamsType>) => {
-           login(values)
+            login(values)
                 .unwrap()
                 .catch(e => {
-                    const {fieldsErrors} = e as {fieldsErrors: FieldsErrorsType[]}
-                    if(isConnectionError(e)) {
-                        handleServerNetworkError(e, dispatch)
+                    const {fieldsErrors} = e as { fieldsErrors: FieldsErrorsType[] }
+                    if (e.message) {
                         return
                     }
-                    if(e.fieldsErrors.length) {
+                    if (e.fieldsErrors.length) {
                         fieldsErrors.forEach((el) => {
-                            formikHelpers.setFieldError(el.field,el.error)
+                            formikHelpers.setFieldError(el.field, el.error)
                         })
                         return
                     }
-                    setAppErrorAC({error:e.messages[0]})
+                    setAppErrorAC({error: e.messages[0]})
                 })
-                .finally(() => {
-                    setAppStatusAC({status: RequestStatus.failed})
-                    }
-                )
         },
 
     })
@@ -102,14 +89,16 @@ export const Login:FC = () => {
                             margin="normal"
                             {...formik.getFieldProps("email")}
                         />
-                        {formik.touched.email && formik.errors.email ? <div style={{color: 'red'}}>{formik.errors.email}</div> : null}
+                        {formik.touched.email && formik.errors.email ?
+                            <div style={{color: 'red'}}>{formik.errors.email}</div> : null}
                         <TextField
                             type="password"
                             label="Password"
                             margin="normal"
                             {...formik.getFieldProps("password")}
                         />
-                        {formik.touched.password && formik.errors.password ? <div style={{color: 'red'}}>{formik.errors.password}</div> : null}
+                        {formik.touched.password && formik.errors.password ?
+                            <div style={{color: 'red'}}>{formik.errors.password}</div> : null}
                         <FormControlLabel
                             label={'Remember me'}
                             control={<Checkbox

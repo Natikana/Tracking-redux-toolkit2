@@ -1,4 +1,3 @@
-import {handleServerAppError, handleServerNetworkError} from 'utils/error-utils'
 import {createSlice} from "@reduxjs/toolkit";
 import {commonActions} from "common/commonActions/commonActions";
 import {setAppStatusAC, setInitializedAC} from "app/app-reducer";
@@ -11,20 +10,13 @@ const initializeApp = createAppAsyncThunk<{ isLoggedIn: boolean }, void>
 ('auth/initializeApp', async (arg, thunkAPI) => {
     const {dispatch, rejectWithValue} = thunkAPI
 
-    try {
         const res = await authAPI.me()
         if (res.data.resultCode === ResultCode.succeeded) {
+            dispatch(setInitializedAC({isInitialized: true}))
             return {isLoggedIn: true}
-        } else {
-            return rejectWithValue(null)
         }
-
-    } catch (e) {
-        handleServerNetworkError(e, dispatch);
-        return rejectWithValue(null)
-    } finally {
-        dispatch(setInitializedAC({isInitialized: true}))
-    }
+            dispatch(setInitializedAC({isInitialized: true}))
+            return rejectWithValue(null)
 
 })
 const login = createAppAsyncThunk<{ isLoggedIn: boolean }, LoginParamsType>
@@ -32,7 +24,6 @@ const login = createAppAsyncThunk<{ isLoggedIn: boolean }, LoginParamsType>
 
     const {dispatch, rejectWithValue} = thunkAPI
 
-    try {
         dispatch(setAppStatusAC({status: RequestStatus.loading}))
         const res = await authAPI.login(arg)
         if (res.data.resultCode === ResultCode.succeeded) {
@@ -41,10 +32,6 @@ const login = createAppAsyncThunk<{ isLoggedIn: boolean }, LoginParamsType>
         } else {
             return rejectWithValue(res.data)
         }
-
-    } catch (e) {
-        return rejectWithValue(e)
-    }
 })
 
 
@@ -53,7 +40,6 @@ const logout = createAppAsyncThunk<{ isLoggedIn: boolean }, void>
 
     const {dispatch, rejectWithValue} = thunkAPI
 
-    try {
         dispatch(setAppStatusAC({status: RequestStatus.loading}))
         const res = await authAPI.logout()
         if (res.data.resultCode === ResultCode.succeeded) {
@@ -61,14 +47,9 @@ const logout = createAppAsyncThunk<{ isLoggedIn: boolean }, void>
             dispatch(setAppStatusAC({status: RequestStatus.succeeded}))
             return {isLoggedIn: false}
         } else {
-            handleServerAppError(res.data, dispatch)
             return rejectWithValue(null)
         }
 
-    } catch (e) {
-        handleServerNetworkError(e, dispatch)
-        return rejectWithValue(null)
-    }
 })
 const authInitialState = {
     isLoggedIn: false

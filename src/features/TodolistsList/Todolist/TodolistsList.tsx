@@ -8,7 +8,6 @@ import {Grid, Paper} from '@material-ui/core'
 import {AddItemForm} from 'components/AddItemForm/AddItemForm'
 import {Todolist} from './Todolist'
 import {Redirect} from 'react-router-dom'
-import {selectTasks} from "features/TodolistsList/tasks/tasks.selectors"
 import {selectTodo} from "features/TodolistsList/Todolist/todolists.selector"
 import {selectAuth} from "features/Login/auth.selectors"
 import {useActions} from "hooks/useAction"
@@ -17,9 +16,8 @@ type Props = {
     demo?: boolean
 }
 
-export const TodolistsList:FC<Props> = ({demo = false}) => {
+export const TodolistsList: FC<Props> = ({demo = false}) => {
     const todolists = useSelector(selectTodo)
-    const tasks = useSelector(selectTasks)
     const isLoggedIn = useSelector(selectAuth)
 
     const {

@@ -9,8 +9,8 @@ type Props = {
 export const EditableSpan:FC<Props> = memo(({value, onChange}) => {
 
     console.log("EditableSpan called");
-    let [editMode, setEditMode] = useState(false)
-    let [title, setTitle] = useState(value)
+    const [editMode, setEditMode] = useState(false)
+    const [title, setTitle] = useState(value)
 
     const activateEditMode = () => {
         setEditMode(true)

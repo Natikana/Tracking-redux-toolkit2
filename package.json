@@ -21,7 +21,7 @@
     "formik": "^2.1.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-redux": "^7.2.0",
+    "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "redux": "4.0.5",
@@ -30,7 +30,9 @@
     "uuid": "^8.0.0"
   },
   "jest": {
-    "transformIgnorePatterns": ["node_modules/(?!axios)/"]
+    "transformIgnorePatterns": [
+      "node_modules/(?!axios)/"
+    ]
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",
@@ -66,8 +68,9 @@
     "@storybook/react": "^5.3.19",
     "@types/redux-logger": "^3.0.9",
     "jest-image-snapshot": "^4.0.2",
-    "jest-puppeteer": "^4.4.0",
-    "puppeteer": "^5.1.0",
+    "jest-puppeteer": "^9.0.0",
+    "prettier": "2.8.8",
+    "puppeteer": "^20.5.0",
     "start-server-and-test": "^1.11.2"
   }
 }
