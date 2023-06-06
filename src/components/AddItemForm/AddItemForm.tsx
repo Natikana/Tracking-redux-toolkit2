@@ -2,18 +2,14 @@ import React, {ChangeEvent, FC, KeyboardEvent, memo, useState} from 'react';
 import {IconButton, TextField} from '@material-ui/core';
 import {AddBox} from '@material-ui/icons';
 
-
 type Props = {
     addItem: (title: string) => Promise<any>
     disabled?: boolean
 }
 
 export const AddItemForm: FC<Props> = memo(({disabled = false, addItem}) => {
-
-
     let [title, setTitle] = useState("")
     let [error, setError] = useState<string | null>(null)
-
 
     const addItemHandler = () => {
         if (title.trim() !== "") {

@@ -16,10 +16,9 @@ export const slice = createSlice({
             state.status = action.payload.status
         },
         setAppErrorAC(state, action: PayloadAction<{ error: null | string }>) {
-
             state.error = action.payload.error
         },
-        setInitializedAC(state, action:PayloadAction<{isInitialized:boolean}>) {
+        setInitializedAC(state, action: PayloadAction<{ isInitialized: boolean }>) {
             state.isInitialized = action.payload.isInitialized
         }
 
@@ -28,39 +27,44 @@ export const slice = createSlice({
         builder
             .addMatcher(
                 (action) => {
-                   return action.type.endsWith('/pending')
+                    return action.type.endsWith('/pending')
                 },
-                (state, action) =>{
+                (state) => {
                     state.status = RequestStatus.loading
-            })
+                })
             .addMatcher(
-            (action) => {
-                return action.type.endsWith('/rejected')
-
-        },
-        (state, action) =>{
-            console.log(action)
-            if(action.payload) {
-                if(action.payload.showError) {
-                    state.error = action.payload.value ? action.payload.value.messages[0] : 'Some error occurred'
-                }
-            } else {
-                state.error = action.error ? action.error.message: 'Some error occurred'
-            }
-            state.status = RequestStatus.failed
-        })
+                (action) => {
+                    return action.type.endsWith('/rejected')
+                },
+                (state, action) => {
+                    if (action.payload) {
+                        if (action.payload.showError) {
+                            state.error = action.payload.value ? action.payload.value.messages[0] : 'Some error occurred'
+                        }
+                    } else {
+                        state.error = action.error ? action.error.message : 'Some error occurred'
+                    }
+                    state.status = RequestStatus.failed
+                })
             .addMatcher(
-                (action)=>{
+                (action) => {
                     return action.type.endsWith('/fulfilled')
                 },
-                (state, action)=>{
+                (state) => {
                     state.status = RequestStatus.idle
                 })
+            .addMatcher(
+                (action) => {
+                    return action.type.includes(`auth/initializeApp`)
+                        && (action.meta.requestStatus === 'fulfilled' || action.meta.requestStatus === 'rejected')
+                },
+                (state) => {
+                    state.isInitialized = true
+                })
 
-}
-
+    }
 })
 export default slice.reducer
-export const {setAppErrorAC, setAppStatusAC, setInitializedAC} = slice.actions
+export const {setAppErrorAC, setAppStatusAC} = slice.actions
 
 
