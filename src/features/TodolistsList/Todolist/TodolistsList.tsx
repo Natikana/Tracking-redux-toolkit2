@@ -41,10 +41,10 @@ export const TodolistsList: FC<Props> = ({demo = false}) => {
     }
 
     return <>
-        <Grid container style={{padding: '20px'}}>
+        <Grid container style={{justifyContent:'center', padding: '30px'}}>
             <AddItemForm addItem={addTodolist}/>
         </Grid>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} style={{justifyContent:'center'}} >
             {
                 todolists.map(tl => {
                     return <Grid item key={tl.id}>

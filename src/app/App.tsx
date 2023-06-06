@@ -21,6 +21,7 @@ import {selectAuth} from "features/Login/auth.selectors";
 import {selectInitialized, selectStatus} from "app/app.selectors";
 import {useActions} from "hooks/useAction";
 
+
 type Props = {
     demo?: boolean
 }
@@ -61,7 +62,7 @@ export const App: FC<Props> = ({demo = false}) => {
                     </Toolbar>
                     {status === 'loading' && <LinearProgress/>}
                 </AppBar>
-                <Container fixed>
+                <Container fixed >
                     <Route exact path={'/'} render={() => <TodolistsList demo={demo}/>}/>
                     <Route path={'/login'} render={() => <Login/>}/>
                 </Container>
